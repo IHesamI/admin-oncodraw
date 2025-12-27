@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FileText, Upload, Users, TrendingUp } from 'lucide-react';
+import { FileText, Upload, Users, TrendingUp, Database } from 'lucide-react';
 // import { supabase } from '../lib/supabase';
 
 export function Dashboard() {
@@ -7,6 +7,7 @@ export function Dashboard() {
     posts: 0,
     files: 0,
     subscriptions: 0,
+    storage:0,
   });
 
   useEffect(() => {
@@ -31,6 +32,7 @@ export function Dashboard() {
     { label: 'Total Posts', value: stats.posts, icon: FileText, color: 'bg-blue-500' },
     { label: 'Total Files', value: stats.files, icon: Upload, color: 'bg-green-500' },
     { label: 'Subscriptions', value: stats.subscriptions, icon: Users, color: 'bg-orange-500' },
+    { label: 'Storage', value: stats.storage, icon: Database, color: 'bg-yellow-500' },
   ];
 
   return (
