@@ -5,46 +5,53 @@ import { Posts } from './components/Posts';
 import { Files } from './components/Files';
 import { Subscriptions } from './components/Subscriptions';
 import Login from './components/Login';
+import ProtectedRoute from './ProtectedRoute';
+
+
+import AlertContextProvider from './Context/AlertContext';
+
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/"
-          element={
-            <AdminLayout>
-              <Dashboard />
-            </AdminLayout>
-          }
-        />
-        <Route
-          path="/posts"
-          element={
-            <AdminLayout>
-              <Posts />
-            </AdminLayout>
-          }
-        />
-        <Route
-          path="/files"
-          element={
-            <AdminLayout>
-              <Files />
-            </AdminLayout>
-          }
-        />
-        <Route
-          path="/subscriptions"
-          element={
-            <AdminLayout>
-              <Subscriptions />
-            </AdminLayout>
-          }
-        />
-      </Routes>
-    </Router>
+    <AlertContextProvider>
+      <Router
+      >
+        <Routes
+        >
+          <Route
+            element={<ProtectedRoute />}
+          >
+            <Route
+              path="/"
+              element={
+                <Dashboard />
+              }
+            />
+            <Route
+              path="/posts"
+              element={
+                <Posts />
+              }
+            />
+            <Route
+              path="/files"
+              element={
+                <Files />
+              }
+            />
+            <Route
+              path="/subscriptions"
+              element={
+
+                <Subscriptions />
+              }
+            />
+          </Route>
+          <Route path="/sign-in" element={<Login />} />
+
+        </Routes>
+      </Router>
+    </AlertContextProvider>
   );
 }
 

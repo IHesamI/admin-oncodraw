@@ -54,7 +54,7 @@ export function Dashboard() {
                 </div>
               </div>
             </div>
-          );
+          )
         })}
       </div>
 
@@ -68,5 +68,5 @@ export function Dashboard() {
         </p>
       </div>
     </div>
-  );
+  )
 }
