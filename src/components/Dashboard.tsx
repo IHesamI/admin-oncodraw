@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FileText, Upload, Users, TrendingUp, Database } from 'lucide-react';
 import { getUserContext } from '../UserContext';
-import { formatSize } from '../pages/storage/sevices';
+import { formatSize } from '../pages/storage/services';
 // import { supabase } from '../lib/supabase';
 
 export function Dashboard() {
