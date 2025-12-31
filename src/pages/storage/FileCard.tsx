@@ -7,8 +7,13 @@ import {
   Music,
   File as FileIcon,
 } from 'lucide-react';
+import { formatSize } from './sevices';
 
-type FileCardProps = Pick<File, 'mime' | 'name' | 'size'>;
+type FileCardProps = {
+  file: File;
+  onSelect: (file: File) => void;
+  isSelected: boolean;
+};
 
 const getFileIcon = (mime: string) => {
   if (mime.startsWith('image/')) return <Image size={24} />;
@@ -18,18 +23,7 @@ const getFileIcon = (mime: string) => {
   return <FileIcon size={24} />;
 };
 
-const formatSize = (bytes: number | string) => {
-  const size = typeof bytes === 'string' ? parseInt(bytes) * 1000 : bytes * 1000;
-  if (!size) return '—';
-  const units = ['B', 'KB', 'MB', 'GB'];
-  let i = 0;
-  let value = size;
-  while (value >= 1000 && i < units.length - 1) {
-    value /= 1000;
-    i++;
-  }
-  return `${value.toFixed(1)} ${units[i]}`;
-};
+
 
 const formatMime = (mime: string) => {
   switch (mime) {
@@ -40,22 +34,48 @@ const formatMime = (mime: string) => {
   }
 }
 
-const FileCard: React.FC<FileCardProps> = ({ name, mime, size }) => {
+const FileCard: React.FC<FileCardProps> = ({
+  file,
+  onSelect,
+  isSelected,
+}) => {
+  const { name,
+    mime,
+    size, } = file;
   return (
-    <div className="
-    max-w-[200px]
+    <div
+
+      onClick={() => onSelect(file)}
+      className={` h-max
+    max-w-[300px]
       group flex items-center gap-4
       rounded-xl border bg-white p-4
       shadow-sm transition-all
-      hover:-translate-y-1 hover:shadow-lg
-    ">
-      <div className="
-        flex h-12 w-12 items-center justify-center
+       hover:shadow-lg
+cursor-pointer
+      ${isSelected ? 'border-blue-500 ring-2 ring-blue-500' : 'border-gray-200'}
+    `}
+    >
+      <input
+        type="checkbox"
+        checked={isSelected}
+        // onChange={() => onSelect(file)}
+        className="
+          form-checkbox h-5 w-5
+          rounded text-blue-600
+          transition duration-150 ease-in-out
+          focus:ring-blue-500
+        "
+      />
+      <div
+        className="
+        flex h-16 w-12 items-center justify-center
         rounded-lg bg-blue-50 text-blue-600
         group-hover:bg-blue-100
       ">
         {getFileIcon(mime)}
       </div>
+
 
       <div className="flex-1 overflow-hidden">
         <h3 className="truncate text-sm font-semibold text-gray-800">

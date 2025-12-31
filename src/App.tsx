@@ -8,6 +8,7 @@ import ProtectedRoute from './ProtectedRoute';
 
 
 import AlertContextProvider from './Context/AlertContext';
+import CreateCase from './pages/case/Create';
 
 
 function App() {
@@ -32,7 +33,13 @@ function App() {
                 <Cases />
               }
             />
-            
+            <Route
+              path="/case/create"
+              element={
+                <CreateCase />
+              }
+            />
+
             <Route
               path="/files"
               element={

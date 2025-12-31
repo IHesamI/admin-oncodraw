@@ -1,38 +1,24 @@
 import { useEffect, useState } from 'react';
 import { FileText, Upload, Users, TrendingUp, Database } from 'lucide-react';
+import { getUserContext } from '../UserContext';
+import { formatSize } from '../pages/storage/sevices';
 // import { supabase } from '../lib/supabase';
 
 export function Dashboard() {
-  const [stats, setStats] = useState({
-    posts: 0,
-    files: 0,
-    subscriptions: 0,
-    storage:0,
-  });
+  // const [stats, setStats] = useState({
+  //   posts: 0,
+  //   files: 0,
+  //   subscriptions: 0,
+  //   storage:0,
+  // });
 
-  useEffect(() => {
-    async function fetchStats() {
-      // const [postsResult, filesResult, subsResult] = await Promise.all([
-      //   supabase.from('posts').select('id', { count: 'exact', head: true }),
-      //   supabase.from('files').select('id', { count: 'exact', head: true }),
-      //   supabase.from('subscriptions').select('id', { count: 'exact', head: true }),
-      // ]);
-
-      // setStats({
-      //   posts: postsResult.count || 0,
-      //   files: filesResult.count || 0,
-      //   subscriptions: subsResult.count || 0,
-      // });
-    }
-
-    fetchStats();
-  }, []);
+  const { cases, courses, storage, user } = getUserContext();
 
   const statCards = [
-    { label: 'Total Posts', value: stats.posts, icon: FileText, color: 'bg-blue-500' },
-    { label: 'Total Files', value: stats.files, icon: Upload, color: 'bg-green-500' },
-    { label: 'Subscriptions', value: stats.subscriptions, icon: Users, color: 'bg-orange-500' },
-    { label: 'Storage', value: stats.storage, icon: Database, color: 'bg-yellow-500' },
+    { label: 'Total Cases', value: cases.length, icon: FileText, color: 'bg-blue-500' },
+    { label: 'Total Files', value: storage.files.length, icon: Upload, color: 'bg-green-500' },
+    // { label: 'Subscriptions', value: stats.subscriptions, icon: Users, color: 'bg-orange-500' },
+    { label: 'Storage', value: formatSize(storage.totalStorage), icon: Database, color: 'bg-yellow-500' },
   ];
 
   return (

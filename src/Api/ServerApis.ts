@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
-import { Course, File, instructorData, ModulePart, ModuleProgress, Notification, Progress, Question, Rate, Submission, User, UserProgress, UserProgressSubscription, User as UserType } from "../types";
+import { Case, Course, File, instructorData, ModulePart, ModuleProgress, Notification, Progress, Question, Rate, StoreType, Submission, User, UserProgress, UserProgressSubscription, User as UserType } from "../types";
 import { modifyCourse, modifyPartsForProgress, modifyProgress } from "./services";
+import { Form } from "react-router-dom";
 class BackEndApisService {
   // Use Next.js API routes as proxy to avoid CORS issues
   private BASE_URL =
@@ -106,15 +107,15 @@ class BackEndApisService {
     return result;
   }
 
-  private async delete(url: string, headers = {}) {
+  private async delete(url: string, body: FormData | string, headers = {}) {
     const jwt = localStorage.getItem("jwt");
     const result = await this.fetch(`${url}`, {
       method: "DELETE",
+      body,
       headers: {
         ...headers,
         Authorization: `Bearer ${jwt}`,
         ...this.commonHeaders
-
       },
     }).then((res) => res.json());
     if (result.error) {
@@ -166,17 +167,9 @@ class BackEndApisService {
     return result;
   }
 
-  async verifyUser(): Promise<{
-    user: User | null,
-    storage: {
-      files: File[],
-      totalStorage: number;
-    },
-    cases: Case[],
-    courses: Course[],
-  }> {
+  async verifyUser(): Promise<StoreType> {
     const jwt = localStorage.getItem("jwt") as string;
-    return this.handleAuthorizeGetAPI(
+    return this.handleAuthorizeGetAPI<StoreType>(
       "/instructor-dashboard",
       {
         Authorization: `Bearer ${jwt}`,
@@ -184,7 +177,10 @@ class BackEndApisService {
       {
         withoutNotif: true,
       }
-    );
+    ).then(res => {
+      res.storage.files = res.storage.files ? res.storage.files : [];
+      return res;
+    });
   }
 
   async editProfile(
@@ -235,9 +231,9 @@ class BackEndApisService {
     return this.post("auth/forget-password", form);
   }
 
-  async deleteSegmentation(segmentaionId: string) {
-    this.delete(`segments/delete/${segmentaionId}`);
-  }
+  // async deleteSegmentation(segmentaionId: string) {
+  //   this.delete(`segments/delete/${segmentaionId}`);
+  // }
 
   downloadFiles(url: string): Promise<Blob> {
     url = `/${url}`.replaceAll("//", "/");
@@ -415,6 +411,13 @@ class BackEndApisService {
         res.course = modifyCourse(res.course);
         return res;
       })
+  }
+  async deleteFiles(files: File[]): Promise<void> {
+    const formData = new FormData();
+    if (files.length) {
+      formData.append('files', JSON.stringify(files));
+      return this.handleAuthorizePostAPI(`instructor-dashboard/delete-files`, formData);
+    }
   }
 }
 

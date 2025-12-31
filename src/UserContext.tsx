@@ -44,11 +44,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     verifyUser();
   }, []);
-
+  console.error(store)
+  
   useEffect(() => {
     if (store.user)
       setLoading(false);
