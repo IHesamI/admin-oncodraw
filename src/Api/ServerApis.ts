@@ -419,6 +419,10 @@ class BackEndApisService {
       return this.handleAuthorizePostAPI(`instructor-dashboard/delete-files`, formData);
     }
   }
+
+  async createCase(caseData: Partial<Case>): Promise<Case> {
+    return this.handleAuthorizePostAPI('/case-types', JSON.stringify({ data: caseData }));
+  }
 }
 
 const BackEndApisServiceInstance = BackEndApisService.REGISTRATION.create();
