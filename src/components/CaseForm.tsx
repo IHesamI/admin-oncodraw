@@ -3,6 +3,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Case, File } from '../types';
 import ServerApis from '../Api/ServerApis';
+import FileSelector from './FileSelector';
 
 const CaseForm = () => {
   const [caseData, setCaseData] = useState<Partial<Case>>({
@@ -58,11 +59,9 @@ const CaseForm = () => {
     setCaseData({ ...caseData, [name]: value });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
-    const selected = files.filter((file) => selectedOptions.includes(file.documentId));
-    setSelectedFiles(selected);
-    setCaseData({ ...caseData, files: selected });
+  const handleFileSelectionChange = (newSelectedFiles: File[]) => {
+    setSelectedFiles(newSelectedFiles);
+    setCaseData({ ...caseData, files: newSelectedFiles });
   };
 
   const handleContentChange = (name: string, value: string) => {
@@ -329,19 +328,11 @@ const CaseForm = () => {
       </div>
       <div>
         <label htmlFor="files" className="block text-sm font-medium text-gray-700">Files</label>
-        <select
-          multiple
-          name="files"
-          id="files"
-          onChange={handleFileChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        >
-          {files.map((file) => (
-            <option key={file.documentId} value={file.documentId}>
-              {file.name}
-            </option>
-          ))}
-        </select>
+        <FileSelector
+          availableFiles={files}
+          selectedFiles={selectedFiles}
+          onSelectionChange={handleFileSelectionChange}
+        />
       </div>
        <button type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
         Create Case
