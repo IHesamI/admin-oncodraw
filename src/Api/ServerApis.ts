@@ -408,6 +408,10 @@ class BackEndApisService {
     return this.handleAuthorizeGetAPI('instructor-dashboard/get-files');
   }
 
+  async deleteFile(fileId: number): Promise<void> {
+    return this.delete(`instructor-dashboard/delete-file/${fileId}`);
+  }
+
   async getInstructorDashboard(documentID: string) {
     return this
       .handleAuthorizeGetAPI<instructorData>(`courses/instrcutor/${documentID}`)
