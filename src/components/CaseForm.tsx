@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Case, File } from '../types';
 import ServerApis from '../Api/ServerApis';
 
@@ -12,6 +14,22 @@ const CaseForm = () => {
     isOpen: false,
     type: 'case-library',
     files: [],
+    StudyInstanceId: '',
+    tag: '',
+    tab1Title: '',
+    tab2Title: '',
+    tab3Title: '',
+    convenors: '',
+    tomurTypes: '',
+    eventDescription: '',
+    convenorsGroup: '',
+    imageMods: '',
+    contourStructs: '',
+    eventConvenors: '',
+    tab1Content: '',
+    tab2Content: '',
+    tab3content: '',
+    showIn: 'develop',
   });
   const [files, setFiles] = useState<File[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -45,6 +63,10 @@ const CaseForm = () => {
     const selected = files.filter((file) => selectedOptions.includes(file.documentId));
     setSelectedFiles(selected);
     setCaseData({ ...caseData, files: selected });
+  };
+
+  const handleContentChange = (name: string, value: string) => {
+    setCaseData({ ...caseData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,6 +125,159 @@ const CaseForm = () => {
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         />
       </div>
+       <div>
+        <label htmlFor="StudyInstanceId" className="block text-sm font-medium text-gray-700">Study Instance ID</label>
+        <input
+          type="text"
+          name="StudyInstanceId"
+          id="StudyInstanceId"
+          value={caseData.StudyInstanceId as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="tag" className="block text-sm font-medium text-gray-700">Tag</label>
+        <input
+          type="text"
+          name="tag"
+          id="tag"
+          value={caseData.tag as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="tab1Title" className="block text-sm font-medium text-gray-700">Tab 1 Title</label>
+        <input
+          type="text"
+          name="tab1Title"
+          id="tab1Title"
+          value={caseData.tab1Title as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="tab1Content" className="block text-sm font-medium text-gray-700">Tab 1 Content</label>
+        <ReactQuill
+          value={caseData.tab1Content as string}
+          onChange={(value) => handleContentChange('tab1Content', value)}
+        />
+      </div>
+      <div>
+        <label htmlFor="tab2Title" className="block text-sm font-medium text-gray-700">Tab 2 Title</label>
+        <input
+          type="text"
+          name="tab2Title"
+          id="tab2Title"
+          value={caseData.tab2Title as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="tab2Content" className="block text-sm font-medium text-gray-700">Tab 2 Content</label>
+        <ReactQuill
+          value={caseData.tab2Content as string}
+          onChange={(value) => handleContentChange('tab2Content', value)}
+        />
+      </div>
+      <div>
+        <label htmlFor="tab3Title" className="block text-sm font-medium text-gray-700">Tab 3 Title</label>
+        <input
+          type="text"
+          name="tab3Title"
+          id="tab3Title"
+          value={caseData.tab3Title as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="tab3content" className="block text-sm font-medium text-gray-700">Tab 3 Content</label>
+        <ReactQuill
+          value={caseData.tab3content as string}
+          onChange={(value) => handleContentChange('tab3content', value)}
+        />
+      </div>
+      <div>
+        <label htmlFor="convenors" className="block text-sm font-medium text-gray-700">Convenors</label>
+        <input
+          type="text"
+          name="convenors"
+          id="convenors"
+          value={caseData.convenors as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="tomurTypes" className="block text-sm font-medium text-gray-700">Tomur Types</label>
+        <input
+          type="text"
+          name="tomurTypes"
+          id="tomurTypes"
+          value={caseData.tomurTypes as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="eventDescription" className="block text-sm font-medium text-gray-700">Event Description</label>
+        <input
+          type="text"
+          name="eventDescription"
+          id="eventDescription"
+          value={caseData.eventDescription as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="convenorsGroup" className="block text-sm font-medium text-gray-700">Convenors Group</label>
+        <input
+          type="text"
+          name="convenorsGroup"
+          id="convenorsGroup"
+          value={caseData.convenorsGroup as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="imageMods" className="block text-sm font-medium text-gray-700">Image Mods</label>
+        <input
+          type="text"
+          name="imageMods"
+          id="imageMods"
+          value={caseData.imageMods as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="contourStructs" className="block text-sm font-medium text-gray-700">Contour Structs</label>
+        <input
+          type="text"
+          name="contourStructs"
+          id="contourStructs"
+          value={caseData.contourStructs as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="eventConvenors" className="block text-sm font-medium text-gray-700">Event Convenors</label>
+        <input
+          type="text"
+          name="eventConvenors"
+          id="eventConvenors"
+          value={caseData.eventConvenors as string}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
       <div>
         <label htmlFor="eventDate" className="block text-sm font-medium text-gray-700">Event Date</label>
         <input
@@ -137,6 +312,19 @@ const CaseForm = () => {
           <option value="case-library">Case Library</option>
           <option value="workshop">Workshop</option>
           <option value="both">Both</option>
+        </select>
+      </div>
+      <div>
+        <label htmlFor="showIn" className="block text-sm font-medium text-gray-700">Show In</label>
+        <select
+          name="showIn"
+          id="showIn"
+          value={caseData.showIn}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+        >
+          <option value="develop">Develop</option>
+          <option value="main">Main</option>
         </select>
       </div>
       <div>
