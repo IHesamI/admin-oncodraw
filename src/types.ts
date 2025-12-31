@@ -1,4 +1,4 @@
-import { ApiCourseCourse, ApiModulePartModulePart, ApiModuleModule, ApiPlanPlan, ApiQuestionQuestion, ApiSubscriptionSubscription, PluginUsersPermissionsUser, ApiOptionOption, ApiProgressProgress } from "./contentTypes";
+import { ApiCourseCourse, ApiModulePartModulePart, ApiModuleModule, ApiPlanPlan, ApiQuestionQuestion, ApiSubscriptionSubscription, PluginUsersPermissionsUser, ApiOptionOption, ApiProgressProgress, ApiCaseTypeCaseType } from "./contentTypes";
 
 export interface CourseInfo {
   id: number;
@@ -252,17 +252,31 @@ export interface Content {
 }
 
 export type instructorData = {
-  course: Course,
-  enrolled: UserProgressSubscription[]
+  courses: Course[],
+  enrolled: UserProgressSubscription[];
+  files: File[],
 }
 
 export type alertProps = {
-    title: string;
-    message: string;
-    onConfirm?: (x: any) => void;
-    onCancel?: (x: any) => void;
-    confirmText?: string;
-    cancelText?: string;
-    type: 'danger' | 'info' | 'success';
-    isOpen: boolean
+  title: string;
+  message: string;
+  onConfirm?: (x: any) => void;
+  onCancel?: (x: any) => void;
+  confirmText?: string;
+  cancelText?: string;
+  type: 'danger' | 'info' | 'success';
+  isOpen: boolean
 };
+
+export type Subscription = ApiSubscriptionSubscription['attributes'];
+export type Case = ApiCaseTypeCaseType['attributes'];
+
+export type StoreType = {
+  user: User | null,
+  storage: {
+    files: File[],
+    totalStorage: number;
+  },
+  cases: Case[],
+  courses: Course[],
+}

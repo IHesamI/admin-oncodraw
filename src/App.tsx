@@ -1,8 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AdminLayout } from './components/AdminLayout';
 import { Dashboard } from './components/Dashboard';
-import { Posts } from './components/Posts';
-import { Files } from './components/Files';
+import { Cases } from './pages/case/Cases';
+import { Files } from './pages/storage/Files';
 import { Subscriptions } from './components/Subscriptions';
 import Login from './components/Login';
 import ProtectedRoute from './ProtectedRoute';
@@ -28,11 +27,12 @@ function App() {
               }
             />
             <Route
-              path="/posts"
+              path="/cases"
               element={
-                <Posts />
+                <Cases />
               }
             />
+            
             <Route
               path="/files"
               element={

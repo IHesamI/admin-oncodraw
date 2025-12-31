@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
 // import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/database.types';
+import { Subscription } from '../types';
 
-type Subscription = Database['public']['Tables']['subscriptions']['Row'];
 
 export function Subscriptions() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
@@ -248,7 +248,7 @@ export function Subscriptions() {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {sub.plan}
+                        {sub.plan.type}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm">

@@ -378,6 +378,27 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
     username: Schema.Attribute.String;
   };
 }
+interface Schema {
+  Attribute: {
+    Text: string;
+    String: string;
+  }
+}
+// type Schema.Attribute.Text=string;
+
+export namespace Schema {
+  export namespace Attribute {
+    export type Text = string;
+    export type String = string;
+    export type DateTime = Date;
+    export type Enumeration<T> = T;
+    export type RichText = string;
+    export type Boolean = boolean;
+    export type Private = unknown;
+    export type Media<T, Multiple extends boolean = false> = Multiple extends true ? PluginUploadFile['attributes'][] : PluginUploadFile['attributes'];
+    type Integer = number;
+  }
+}
 
 export interface ApiCaseTypeCaseType extends Struct.CollectionTypeSchema {
   collectionName: 'case_types';
@@ -805,17 +826,17 @@ export interface ApiResponseResponse extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    id:number;
+    id: number;
     answer: Schema.Attribute.Relation<'oneToOne', 'api::option.option'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
+    Schema.Attribute.Private;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::response.response'
     > &
-      Schema.Attribute.Private;
+    Schema.Attribute.Private;
     owner: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
@@ -825,7 +846,7 @@ export interface ApiResponseResponse extends Struct.CollectionTypeSchema {
     score: Schema.Attribute.Integer;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
+    Schema.Attribute.Private;
   };
 }
 
@@ -872,7 +893,7 @@ export interface ApiQuestionQuestion extends Struct.CollectionTypeSchema {
   attributes: {
     id: number;
     documentId: string;
-    responses:ApiResponseResponse['attributes'][];
+    responses: ApiResponseResponse['attributes'][];
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
     Schema.Attribute.Private;
@@ -1023,6 +1044,7 @@ export interface ApiSubscriptionSubscription
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
     Schema.Attribute.Private;
+    plan: ApiPlanPlan['attributes'];
     duration: Schema.Attribute.BigInteger;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<

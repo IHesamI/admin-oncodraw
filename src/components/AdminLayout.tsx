@@ -9,10 +9,10 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const location = useLocation();
-  const { user } = getUserContext()
+  const { user, } = getUserContext()
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
-    { id: 'posts', label: 'Posts', icon: FileText, path: '/posts' },
+    { id: 'cases', label: 'Cases', icon: FileText, path: '/cases' },
     { id: 'files', label: 'Files', icon: Upload, path: '/files' },
     { id: 'subscriptions', label: 'Subscriptions', icon: Users, path: '/subscriptions' },
   ];
@@ -22,7 +22,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <aside className="w-64 bg-[#000325] border-r flex flex-col justify-between pb-2 border-gray-200 fixed h-full">
         <div>
           <div className="p-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-main">Admin Panel</h1>
+            <h1 className="text-2xl font-bold text-main">OncoRealm Panel</h1>
           </div>
           <nav className="p-4">
             {navItems.map((item) => {

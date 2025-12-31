@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { Course, File, instructorData, ModulePart, ModuleProgress, Notification, Progress, Question, Rate, Submission, UserProgress, UserProgressSubscription, User as UserType } from "../types";
+import { Course, File, instructorData, ModulePart, ModuleProgress, Notification, Progress, Question, Rate, Submission, User, UserProgress, UserProgressSubscription, User as UserType } from "../types";
 import { modifyCourse, modifyPartsForProgress, modifyProgress } from "./services";
 class BackEndApisService {
   // Use Next.js API routes as proxy to avoid CORS issues
@@ -166,9 +166,15 @@ class BackEndApisService {
     return result;
   }
 
-  constructor() { }
-
-  async verifyUser(): Promise<{ admin: UserType, storage: number }> {
+  async verifyUser(): Promise<{
+    user: User | null,
+    storage: {
+      files: File[],
+      totalStorage: number;
+    },
+    cases: Case[],
+    courses: Course[],
+  }> {
     const jwt = localStorage.getItem("jwt") as string;
     return this.handleAuthorizeGetAPI(
       "/instructor-dashboard",
@@ -388,6 +394,20 @@ class BackEndApisService {
     form.append('optionId', `${payload.optionId}`);
     return this.handleAuthorizePostAPI(`/response/save-reponse/${question.documentId}`, form,)
   }
+
+  async uploadChunk(chunk: any, fileId: string, i: number, chunks: number, name: string) {
+    const formData = new FormData();
+    formData.append("chunk", chunk);
+    formData.append("fileId", fileId);
+    formData.append("chunkIndex", `${i}`);
+    formData.append("totalChunks", `${chunks}`);
+    formData.append("fileName", name);
+    return this.handleAuthorizePostAPI<{ done: boolean, file: File[] }>('instructor-dashboard/upload-file', formData);
+  }
+  async getFiles(): Promise<File[]> {
+    return this.handleAuthorizeGetAPI('instructor-dashboard/get-files');
+  }
+
   async getInstructorDashboard(documentID: string) {
     return this
       .handleAuthorizeGetAPI<instructorData>(`courses/instrcutor/${documentID}`)

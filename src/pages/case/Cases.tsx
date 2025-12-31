@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Save, X } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-// import { supabase } from '../lib/supabase';
-import type { Database } from '../lib/database.types';
+import { Case } from '../../types';
+import { useNavigate } from 'react-router-dom';
 
-type Post = Database['public']['Tables']['posts']['Row'];
 
-export function Posts() {
-  const [posts, setPosts] = useState<Post[]>([]);
+export function Cases() {
+  const [cases, setCases] = useState<Case[]>([]);
   const [isCreating, setIsCreating] = useState(false);
-  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [editingPost, setEditingPost] = useState<Case | null>(null);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -18,62 +18,12 @@ export function Posts() {
     published: false,
   });
 
-  // useEffect(() => {
-  //   fetchPosts();
-  // }, []);
-
-
-
-  // async function handleSubmit(e: React.FormEvent) {
-  //   e.preventDefault();
-
-  //   if (editingPost) {
-  //     const { error } = await supabase
-  //       .from('posts')
-  //       .update({
-  //         ...formData,
-  //         updated_at: new Date().toISOString(),
-  //       })
-  //       .eq('id', editingPost.id);
-
-  //     if (error) {
-  //       console.error('Error updating post:', error);
-  //       return;
-  //     }
-  //   } else {
-  //     const { error } = await supabase
-  //       .from('posts')
-  //       .insert([formData]);
-
-  //     if (error) {
-  //       console.error('Error creating post:', error);
-  //       return;
-  //     }
-  //   }
-
-  //   setFormData({ title: '', content: '', author: '', published: false });
-  //   setIsCreating(false);
-  //   setEditingPost(null);
-  //   fetchPosts();
-  // }
 
   async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this post?')) return;
-
-    // // const { error } = await supabase
-    //   .from('posts')
-    //   .delete()
-    //   .eq('id', id);
-
-    // if (error) {
-    //   console.error('Error deleting post:', error);
-    //   return;
-    // }
-
-    // // fetchPosts();
   }
 
-  function handleEdit(post: Post) {
+  function handleEdit(post: Case) {
     setEditingPost(post);
     setFormData({
       title: post.title,
@@ -105,14 +55,14 @@ export function Posts() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800">Posts</h2>
+        <h2 className="text-3xl font-bold text-gray-800">Cases</h2>
         {!isCreating && (
           <button
-            onClick={() => setIsCreating(true)}
+            onClick={() => navigate('/case/create')}
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-5 h-5" />
-            New Post
+            New Case
           </button>
         )}
       </div>
@@ -219,51 +169,13 @@ export function Posts() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {posts.length === 0 ? (
+              {cases.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                     No posts yet. Create your first post!
                   </td>
                 </tr>
-              ) : (
-                posts.map((post) => (
-                  <tr key={post.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {post.title}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {post.author || '-'}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${post.published
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
-                          }`}
-                      >
-                        {post.published ? 'Published' : 'Draft'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {new Date(post.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-right">
-                      <button
-                        onClick={() => handleEdit(post)}
-                        className="text-blue-600 hover:text-blue-800 mr-3"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(post.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ) : <></>}
             </tbody>
           </table>
         </div>
