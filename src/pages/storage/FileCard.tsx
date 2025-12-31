@@ -7,7 +7,7 @@ import {
   Music,
   File as FileIcon,
 } from 'lucide-react';
-import { formatSize } from './services';
+import { formatSize } from './sevices';
 
 type FileCardProps = {
   file: File;

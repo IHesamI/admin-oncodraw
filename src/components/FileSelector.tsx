@@ -1,156 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { getUserContext } from '../UserContext';
-import { formatSize as formatFileSize } from '../pages/storage/services';
-
-export interface File {
-  id: number;
-  name: string;
-  mime: string;
-  size: number;
-  url: string;
-}
+import { File } from '../types';
 
 interface FileSelectorProps {
+  availableFiles: File[];
   selectedFiles: File[];
   onSelectionChange: (selectedFiles: File[]) => void;
 }
 
-const FileSelector: React.FC<FileSelectorProps> = ({
-  selectedFiles,
-  onSelectionChange,
-}) => {
-  const [localSelectedFiles, setLocalSelectedFiles] =
-    useState<File[]>(selectedFiles);
-  const [availableFiles, setAvailableFiles] = useState<File[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const {
-    storage: { files },
-  } = getUserContext();
+const FileSelector: React.FC<FileSelectorProps> = ({ availableFiles, selectedFiles, onSelectionChange }) => {
+  const [localSelectedFiles, setLocalSelectedFiles] = useState<File[]>(selectedFiles);
+  const [localAvailableFiles, setLocalAvailableFiles] = useState<File[]>([]);
 
   useEffect(() => {
     setLocalSelectedFiles(selectedFiles);
-    const selectedIds = selectedFiles.map((f) => f.id);
-    setAvailableFiles(files.filter((f) => !selectedIds.includes(f.id)));
-  }, [files, selectedFiles]);
+    const selectedIds = selectedFiles.map(f => f.id);
+    setLocalAvailableFiles(availableFiles.filter(f => !selectedIds.includes(f.id)));
+  }, [availableFiles, selectedFiles]);
 
-  const selectFile = (file: File) => {
-    const updated = [...localSelectedFiles, file];
-    setLocalSelectedFiles(updated);
-    setAvailableFiles((prev) => prev.filter((f) => f.id !== file.id));
-    onSelectionChange(updated);
+  const handleSelectFile = (file: File) => {
+    const newSelectedFiles = [...localSelectedFiles, file];
+    setLocalSelectedFiles(newSelectedFiles);
+    const newAvailableFiles = localAvailableFiles.filter(f => f.id !== file.id);
+    setLocalAvailableFiles(newAvailableFiles);
+    onSelectionChange(newSelectedFiles);
   };
 
-  const removeFile = (file: File) => {
-    const updated = localSelectedFiles.filter((f) => f.id !== file.id);
-    setLocalSelectedFiles(updated);
-    setAvailableFiles((prev) => [...prev, file]);
-    onSelectionChange(updated);
+  const handleDeselectFile = (file: File) => {
+    const newSelectedFiles = localSelectedFiles.filter(f => f.id !== file.id);
+    setLocalSelectedFiles(newSelectedFiles);
+    const newAvailableFiles = [...localAvailableFiles, file];
+    setLocalAvailableFiles(newAvailableFiles);
+    onSelectionChange(newSelectedFiles);
   };
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-800">
-          Selected Files
-        </h3>
-
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 transition"
-        >
-          + Add files
-        </button>
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        <h3 className="text-lg font-medium text-gray-700">Available Files</h3>
+        <ul className="mt-2 h-64 overflow-y-auto rounded-md border border-gray-300">
+          {localAvailableFiles.map(file => (
+            <li
+              key={file.id}
+              onClick={() => handleSelectFile(file)}
+              className="cursor-pointer p-2 hover:bg-gray-100"
+            >
+              {file.name}
+            </li>
+          ))}
+        </ul>
       </div>
-
-      {/* Selected files */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 min-h-[120px]">
-        {localSelectedFiles.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center">
-            No files selected
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {localSelectedFiles.map((file) => (
-              <div
-                key={file.id}
-                className="flex items-center justify-between rounded-lg border p-3 hover:shadow-sm transition"
-              >
-                <div className="truncate">
-                  <p className="text-sm font-medium text-gray-700 truncate">
-                    {file.name}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {formatFileSize(file.size)}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => removeFile(file)}
-                  className="ml-3 text-xs text-red-500 hover:text-red-600"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+      <div>
+        <h3 className="text-lg font-medium text-gray-700">Selected Files</h3>
+        <ul className="mt-2 h-64 overflow-y-auto rounded-md border border-gray-300">
+          {localSelectedFiles.map(file => (
+            <li
+              key={file.id}
+              onClick={() => handleDeselectFile(file)}
+              className="cursor-pointer p-2 hover:bg-gray-100"
+            >
+              {file.name}
+            </li>
+          ))}
+        </ul>
       </div>
-
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
-            {/* Modal header */}
-            <div className="flex items-center justify-between border-b px-4 py-3">
-              <h4 className="font-semibold text-gray-800">
-                Available Files
-              </h4>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Modal body */}
-            <div className="max-h-[350px] overflow-y-auto p-4 space-y-2">
-              {availableFiles.length === 0 ? (
-                <p className="text-sm text-gray-400 text-center">
-                  No more files available
-                </p>
-              ) : (
-                availableFiles.map((file) => (
-                  <div
-                    key={file.id}
-                    onClick={() => selectFile(file)}
-                    className="cursor-pointer rounded-lg border p-3 hover:bg-gray-50 hover:border-indigo-400 transition"
-                  >
-                    <p className="text-sm font-medium text-gray-700 truncate">
-                      {file.name}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      {formatFileSize(file.size)}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Modal footer */}
-            <div className="border-t px-4 py-3 text-right">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="rounded-md bg-gray-100 px-4 py-2 text-sm hover:bg-gray-200"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

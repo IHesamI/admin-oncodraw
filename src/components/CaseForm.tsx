@@ -4,6 +4,7 @@ import 'react-quill/dist/quill.snow.css';
 import { Case, File } from '../types';
 import ServerApis from '../Api/ServerApis';
 import FileSelector from './FileSelector';
+import './Form.css';
 
 const CaseForm = () => {
   const [caseData, setCaseData] = useState<Partial<Case>>({
@@ -88,7 +89,7 @@ const CaseForm = () => {
           id="title"
           value={caseData.title as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -99,7 +100,7 @@ const CaseForm = () => {
           value={caseData.description as string}
           onChange={handleChange}
           rows={3}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -110,7 +111,7 @@ const CaseForm = () => {
           id="category"
           value={caseData.category as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -121,7 +122,7 @@ const CaseForm = () => {
           id="subCategory"
           value={caseData.subCategory as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
        <div>
@@ -132,7 +133,7 @@ const CaseForm = () => {
           id="StudyInstanceId"
           value={caseData.StudyInstanceId as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -143,7 +144,7 @@ const CaseForm = () => {
           id="tag"
           value={caseData.tag as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -154,7 +155,7 @@ const CaseForm = () => {
           id="tab1Title"
           value={caseData.tab1Title as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -172,7 +173,7 @@ const CaseForm = () => {
           id="tab2Title"
           value={caseData.tab2Title as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -190,7 +191,7 @@ const CaseForm = () => {
           id="tab3Title"
           value={caseData.tab3Title as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -208,7 +209,7 @@ const CaseForm = () => {
           id="convenors"
           value={caseData.convenors as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -219,7 +220,7 @@ const CaseForm = () => {
           id="tomurTypes"
           value={caseData.tomurTypes as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -230,7 +231,7 @@ const CaseForm = () => {
           id="eventDescription"
           value={caseData.eventDescription as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -241,7 +242,7 @@ const CaseForm = () => {
           id="convenorsGroup"
           value={caseData.convenorsGroup as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -252,7 +253,7 @@ const CaseForm = () => {
           id="imageMods"
           value={caseData.imageMods as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -263,7 +264,7 @@ const CaseForm = () => {
           id="contourStructs"
           value={caseData.contourStructs as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -274,7 +275,7 @@ const CaseForm = () => {
           id="eventConvenors"
           value={caseData.eventConvenors as string}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div>
@@ -285,7 +286,7 @@ const CaseForm = () => {
           id="eventDate"
           value={caseData.eventDate ? new Date(caseData.eventDate).toISOString().split('T')[0] : ''}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="form-input"
         />
       </div>
       <div className="flex items-center">
@@ -306,7 +307,7 @@ const CaseForm = () => {
           id="type"
           value={caseData.type}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+          className="form-input py-2 pl-3 pr-10 text-base focus:outline-none"
         >
           <option value="case-library">Case Library</option>
           <option value="workshop">Workshop</option>
@@ -320,7 +321,7 @@ const CaseForm = () => {
           id="showIn"
           value={caseData.showIn}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+          className="form-input py-2 pl-3 pr-10 text-base focus:outline-none"
         >
           <option value="develop">Develop</option>
           <option value="main">Main</option>
