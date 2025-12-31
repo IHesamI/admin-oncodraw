@@ -13,7 +13,7 @@ const Login = () => {
     email: '',
     password: '',
   });
-  const { user, setUser } = getUserContext();
+  const { user, updateStore } = getUserContext();
   const navigate = useNavigate();
 
   const { showAlert } = useAlert()
@@ -33,7 +33,6 @@ const Login = () => {
         .loginUser(loginInfo.current);
       if (result) {
         localStorage.setItem("jwt", result.jwt);
-        setUser(result.user);
         window.location.href = '/'
       }
     } catch (error) {
