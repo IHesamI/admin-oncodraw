@@ -13,6 +13,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
     { id: 'cases', label: 'Cases', icon: FileText, path: '/cases' },
+    { id: 'create-course', label: 'Create Course', icon: FileText, path: '/course/create' },
     { id: 'files', label: 'Files', icon: Upload, path: '/files' },
     { id: 'subscriptions', label: 'Subscriptions', icon: Users, path: '/subscriptions' },
   ];

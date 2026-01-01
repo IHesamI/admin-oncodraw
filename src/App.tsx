@@ -10,6 +10,7 @@ import ProtectedRoute from './ProtectedRoute';
 import AlertContextProvider from './Context/AlertContext';
 import CreateCase from './pages/case/Create';
 import EditCase from './pages/case/CaseEdit';
+import CreateCourse from './pages/course/CreateCourse';
 
 
 function App() {
@@ -44,6 +45,12 @@ function App() {
               path="/case/edit/:documentId"
               element={
                 <EditCase />
+              }
+            />
+            <Route
+              path="/course/create"
+              element={
+                <CreateCourse />
               }
             />
             <Route
