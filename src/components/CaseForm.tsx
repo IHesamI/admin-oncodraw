@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { Case, File } from '../types';
+import { Case, File, User } from '../types';
 import ServerApis from '../Api/ServerApis';
 import FileSelector from './FileSelector';
+import { UserContext } from '../UserContext';
+import * as XLSX from 'xlsx';
 
 const CaseForm = () => {
+  const user = useContext(UserContext);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [selectedTeacher, setSelectedTeacher] = useState<string>('');
+  const [participantEmails, setParticipantEmails] = useState<string[]>([]);
   const [caseData, setCaseData] = useState<Partial<Case>>({
     title: '',
     description: '',
@@ -47,6 +53,18 @@ const CaseForm = () => {
     fetchFiles();
   }, []);
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const users = await ServerApis.getUsers();
+        setAllUsers(users);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+    fetchUsers();
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
 
@@ -71,7 +89,23 @@ const CaseForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await ServerApis.createCase(caseData);
+      let finalCaseData = { ...caseData };
+      if (user?.role.name === 'admin') {
+        const participantIds = allUsers
+          .filter(user => participantEmails.includes(user.email))
+          .map(user => user.id);
+        finalCaseData = {
+          ...finalCaseData,
+          teacher: selectedTeacher,
+          participants: participantIds,
+        };
+      } else if (user?.role.name === 'teacher') {
+        finalCaseData = {
+          ...finalCaseData,
+          teacher: user.id,
+        };
+      }
+      await ServerApis.createCase(finalCaseData);
       console.log('Case created successfully');
     } catch (error) {
       console.error('Error creating case:', error);
@@ -335,6 +369,57 @@ const CaseForm = () => {
           onSelectionChange={handleFileSelectionChange}
         />
       </div>
+      {user?.role.name === 'admin' && (
+        <div>
+          <label htmlFor="teacher" className="block text-sm font-medium text-gray-700">Teacher</label>
+          <select
+            name="teacher"
+            id="teacher"
+            value={selectedTeacher}
+            onChange={(e) => setSelectedTeacher(e.target.value)}
+            className={'form-input'}
+          >
+            <option value="">Select a teacher</option>
+            {allUsers.map((user) => (
+              <option key={user.id} value={user.id}>{user.username}</option>
+            ))}
+          </select>
+        </div>
+      )}
+      {user?.role.name === 'admin' && (
+        <div>
+          <label htmlFor="participants" className="block text-sm font-medium text-gray-700">Participants</label>
+          <textarea
+            name="participants"
+            id="participants"
+            value={participantEmails.join('\n')}
+            onChange={(e) => setParticipantEmails(e.target.value.split('\n'))}
+            rows={3}
+            className={'form-input'}
+          />
+          <input
+            type="file"
+            name="participantsFile"
+            id="participantsFile"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                  const bstr = evt.target?.result;
+                  const wb = XLSX.read(bstr, { type: 'binary' });
+                  const wsname = wb.SheetNames[0];
+                  const ws = wb.Sheets[wsname];
+                  const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                  const emails = data.flat().filter((cell) => typeof cell === 'string' && cell.includes('@'));
+                  setParticipantEmails([...participantEmails, ...emails]);
+                };
+                reader.readAsBinaryString(file);
+              }
+            }}
+          />
+        </div>
+      )}
       <button type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
         Create Case
       </button>

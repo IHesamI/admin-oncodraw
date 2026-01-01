@@ -404,6 +404,10 @@ class BackEndApisService {
     return this.handleAuthorizeGetAPI('instructor-dashboard/get-files');
   }
 
+  async getUsers(): Promise<User[]> {
+    return this.handleAuthorizeGetAPI('/users-permissions/users');
+  }
+
   async getInstructorDashboard(documentID: string) {
     return this
       .handleAuthorizeGetAPI<instructorData>(`courses/instrcutor/${documentID}`)
