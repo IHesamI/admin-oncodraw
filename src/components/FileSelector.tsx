@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { getUserContext } from '../UserContext';
 import { formatSize as formatFileSize } from '../pages/storage/services';
+import { File } from '../types';
 
-export interface File {
-  id: number;
-  name: string;
-  mime: string;
-  size: number;
-  url: string;
-}
+// export interface File {
+//   id: number;
+//   name: string;
+//   mime: string;
+//   size: number;
+//   url: string;
+// }
 
 interface FileSelectorProps {
   selectedFiles: File[];
@@ -53,7 +54,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800">
-          Selected Files
+          
         </h3>
 
         <button

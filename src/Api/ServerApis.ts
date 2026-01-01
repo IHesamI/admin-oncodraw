@@ -425,7 +425,11 @@ class BackEndApisService {
   }
 
   async createCase(caseData: Partial<Case>): Promise<Case> {
-    return this.handleAuthorizePostAPI('/case-types', JSON.stringify({ data: caseData }));
+    return this.handleAuthorizePostAPI('/instructor-dashboard/create-case', JSON.stringify({ ...caseData }));
+  }
+
+  async editCase(caseData: Partial<Case>): Promise<Case> {
+    return this.handleAuthorizePostAPI(`/instructor-dashboard/edit-case/${caseData.documentId}`, JSON.stringify({ ...caseData }));
   }
 }
 

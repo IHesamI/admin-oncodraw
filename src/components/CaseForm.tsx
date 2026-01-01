@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Case, File, User } from '../types';
@@ -6,64 +6,56 @@ import ServerApis from '../Api/ServerApis';
 import FileSelector from './FileSelector';
 import { UserContext } from '../UserContext';
 import * as XLSX from 'xlsx';
+import { uuidv4 } from '../utils/commonServices';
 
-const CaseForm = () => {
-  const user = useContext(UserContext);
-  const [allUsers, setAllUsers] = useState<User[]>([]);
-  const [selectedTeacher, setSelectedTeacher] = useState<string>('');
-  const [participantEmails, setParticipantEmails] = useState<string[]>([]);
-  const [caseData, setCaseData] = useState<Partial<Case>>({
-    title: '',
-    description: '',
-    category: '',
-    subCategory: '',
-    eventDate: new Date(),
-    isOpen: false,
-    type: 'case-library',
-    files: [],
-    StudyInstanceId: '',
-    tag: '',
-    tab1Title: '',
-    tab2Title: '',
-    tab3Title: '',
-    convenors: '',
-    tomurTypes: '',
-    eventDescription: '',
-    convenorsGroup: '',
-    imageMods: '',
-    contourStructs: '',
-    eventConvenors: '',
-    tab1Content: '',
-    tab2Content: '',
-    tab3content: '',
-    showIn: 'develop',
-  });
-  const [files, setFiles] = useState<File[]>([]);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+const CaseForm = ({ initialData, handleSubmit }:
+  {
+    initialData?: Case,
+    handleSubmit: (theCaseData: Partial<Case>) => void
+  }
+) => {
+  const { user } = useContext(UserContext);
+  // const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [participantEmails, setParticipantEmails] = useState<{ email: string, id: string }[]>(
+    initialData ?
+      initialData.participants :
+      [{ email: '', id: uuidv4() }]);
+  const participantsRef = useRef<HTMLInputElement>(null);
+  const [caseData, setCaseData] = useState<Partial<Case>>(
+    initialData || {
+      title: '',
+      teacher: user?.email,
+      description: '',
+      category: '',
+      subCategory: '',
+      eventDate: new Date(),
+      isOpen: false,
+      type: 'case-library',
+      files: [],
+      StudyInstanceId: '',
+      tag: '',
+      tab1Title: '',
+      tab2Title: '',
+      tab3Title: '',
+      convenors: '',
+      tomurTypes: '',
+      eventDescription: '',
+      convenorsGroup: '',
+      imageMods: '',
+      contourStructs: '',
+      eventConvenors: '',
+      tab1Content: '',
+      tab2Content: '',
+      tab3content: '',
+      showIn: 'develop',
+    });
+  const [selectedFiles, setSelectedFiles] = useState<File[]>(
+    initialData && initialData.files ?
+      initialData.files :
+      []);
 
-  useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        const files = await ServerApis.getFiles();
-        setFiles(files);
-      } catch (error) {
-        console.error('Error fetching files:', error);
-      }
-    };
-    fetchFiles();
-  }, []);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const users = await ServerApis.getUsers();
-        setAllUsers(users);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-    fetchUsers();
-  }, []);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -86,34 +78,45 @@ const CaseForm = () => {
     setCaseData({ ...caseData, [name]: value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleBeforeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       let finalCaseData = { ...caseData };
-      if (user?.role.name === 'admin') {
-        const participantIds = allUsers
-          .filter(user => participantEmails.includes(user.email))
-          .map(user => user.id);
-        finalCaseData = {
-          ...finalCaseData,
-          teacher: selectedTeacher,
-          participants: participantIds,
-        };
-      } else if (user?.role.name === 'teacher') {
-        finalCaseData = {
-          ...finalCaseData,
-          teacher: user.id,
-        };
-      }
-      await ServerApis.createCase(finalCaseData);
-      console.log('Case created successfully');
+      finalCaseData = {
+        ...finalCaseData,
+        participants: participantEmails.map(part => part.email),
+      };
+
+      handleSubmit(finalCaseData);
     } catch (error) {
       console.error('Error creating case:', error);
     }
   };
 
+  const handleParticipantsFileEnter = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const bstr = evt.target?.result;
+        const wb = XLSX.read(bstr, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        console.error('data')
+        const emails = data.flat().filter((cell) => typeof cell === 'string' && cell.includes('@')) as string[];
+        setParticipantEmails([
+          ...participantEmails,
+          ...emails.map((item: string) => ({ id: uuidv4(), email: item }))
+        ]);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleBeforeSubmit} className="space-y-4">
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
         <input
@@ -364,62 +367,77 @@ const CaseForm = () => {
       <div>
         <label htmlFor="files" className="block text-sm font-medium text-gray-700">Files</label>
         <FileSelector
-          availableFiles={files}
-          selectedFiles={selectedFiles}
           onSelectionChange={handleFileSelectionChange}
+          selectedFiles={selectedFiles}
         />
       </div>
-      {user?.role.name === 'admin' && (
-        <div>
-          <label htmlFor="teacher" className="block text-sm font-medium text-gray-700">Teacher</label>
-          <select
-            name="teacher"
-            id="teacher"
-            value={selectedTeacher}
-            onChange={(e) => setSelectedTeacher(e.target.value)}
-            className={'form-input'}
-          >
-            <option value="">Select a teacher</option>
-            {allUsers.map((user) => (
-              <option key={user.id} value={user.id}>{user.username}</option>
-            ))}
-          </select>
-        </div>
-      )}
-      {user?.role.name === 'admin' && (
-        <div>
-          <label htmlFor="participants" className="block text-sm font-medium text-gray-700">Participants</label>
-          <textarea
-            name="participants"
-            id="participants"
-            value={participantEmails.join('\n')}
-            onChange={(e) => setParticipantEmails(e.target.value.split('\n'))}
-            rows={3}
-            className={'form-input'}
-          />
-          <input
-            type="file"
-            name="participantsFile"
-            id="participantsFile"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onload = (evt) => {
-                  const bstr = evt.target?.result;
-                  const wb = XLSX.read(bstr, { type: 'binary' });
-                  const wsname = wb.SheetNames[0];
-                  const ws = wb.Sheets[wsname];
-                  const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-                  const emails = data.flat().filter((cell) => typeof cell === 'string' && cell.includes('@'));
-                  setParticipantEmails([...participantEmails, ...emails]);
-                };
-                reader.readAsBinaryString(file);
-              }
-            }}
-          />
-        </div>
-      )}
+
+      <div>
+        <label htmlFor="teacher" className="block text-sm font-medium text-gray-700">Teacher</label>
+        <input
+          type="text"
+          name="teacher"
+          id="teacher"
+          value={caseData.teacher as string}
+          onChange={handleChange}
+          className='border-[1px] border-gray-300'
+        />
+      </div>
+      <div className='flex flex-col'>
+        <label htmlFor="participants" className="block text-sm font-medium text-gray-700">Participants</label>
+        {participantEmails.map((item, index) => {
+          return <div key={item.id} className='my-[1px]'>
+            <input
+              onChange={(e) => {
+                setParticipantEmails(state => {
+                  state[index].email = e.target.value;
+                  return [...state];
+                });
+              }}
+              placeholder='Email'
+              defaultValue={item.email}
+              className='border-[1px] border-gray-300'
+              type="email" />
+            &nbsp;
+            <button
+              onClick={() => {
+                setParticipantEmails(state => {
+                  return state.slice(0, index).concat(state.slice(index + 1));
+                })
+              }}
+              className="inline-flex  justify-center rounded-md border border-transparent bg-red-600 py-1 px-4 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+              Delete
+            </button>
+          </div>
+        })}
+        <button
+          onClick={() => {
+            setParticipantEmails(state => {
+              // state.push('');
+              return [...state, { email: '', id: uuidv4() }];
+            })
+          }}
+          type="submit" className="w-fit inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+          Add Participants
+        </button>
+        <input
+          ref={participantsRef}
+          type="file"
+          name="participantsFile"
+          id="participantsFile"
+          onChange={handleParticipantsFileEnter}
+          className='hidden'
+        />
+        or
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            participantsRef.current!.click();
+          }}
+          className="inline-flex justify-center w-fit rounded-md border border-transparent bg-orange-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+          Upload Participants
+        </button>
+      </div>
       <button type="submit" className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
         Create Case
       </button>

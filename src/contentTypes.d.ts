@@ -443,7 +443,7 @@ export interface ApiCaseTypeCaseType extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     schedules: Schema.Attribute.Relation<'oneToMany', 'api::schedule.schedule'>;
     segments: Schema.Attribute.Relation<'oneToMany', 'api::segment.segment'>;
-    showIn: Schema.Attribute.Enumeration<['develop', 'main']>;
+    showIn: Schema.Attribute.Enumeration<'develop'| 'main'>;
     Structures: Schema.Attribute.Component<'structures.structures', true>;
     StudyInstanceId: Schema.Attribute.Text;
     subCategory: Schema.Attribute.Text;
@@ -478,7 +478,7 @@ export interface ApiCaseTypeCaseType extends Struct.CollectionTypeSchema {
     >;
     title: Schema.Attribute.Text;
     tomurTypes: Schema.Attribute.String;
-    type: Schema.Attribute.Enumeration<['case-library', 'workshop', 'both']>;
+    type: Schema.Attribute.Enumeration<'case-library'|'workshop' |'both'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
     Schema.Attribute.Private;

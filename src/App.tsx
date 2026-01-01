@@ -9,6 +9,7 @@ import ProtectedRoute from './ProtectedRoute';
 
 import AlertContextProvider from './Context/AlertContext';
 import CreateCase from './pages/case/Create';
+import EditCase from './pages/case/CaseEdit';
 
 
 function App() {
@@ -39,7 +40,12 @@ function App() {
                 <CreateCase />
               }
             />
-
+            <Route
+              path="/case/edit/:documentId"
+              element={
+                <EditCase />
+              }
+            />
             <Route
               path="/files"
               element={

@@ -268,8 +268,13 @@ export type alertProps = {
   isOpen: boolean
 };
 
-export type Subscription = ApiSubscriptionSubscription['attributes'];
-export type Case = ApiCaseTypeCaseType['attributes'];
+type withId = {
+  id: number;
+  documentId: string;
+}
+
+export type Subscription = ApiSubscriptionSubscription['attributes'] & withId;
+export type Case = ApiCaseTypeCaseType['attributes'] & withId;
 
 export type StoreType = {
   user: User | null,
@@ -280,3 +285,4 @@ export type StoreType = {
   cases: Case[],
   courses: Course[],
 }
+
