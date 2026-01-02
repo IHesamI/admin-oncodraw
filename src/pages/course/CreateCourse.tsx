@@ -1,89 +1,118 @@
 import React, { useState } from 'react';
 import FileSelector from '../../components/FileSelector';
-import { Course, Module, ModulePart } from '../../types';
+import { Course, Module, ModulePart, Question } from '../../types';
+import ModulePartComponent from '../../components/ModulePart';
+import { uuidv4 } from '../../utils/commonServices';
+import ReactQuill from 'react-quill';
 
 export default function CreateCourse() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [difficulty, setDifficulty] = useState(0);
-  const [price, setPrice] = useState(0);
-  const [thumbnail, setThumbnail] = useState(null);
-  const [modules, setModules] = useState<Module[]>([]);
 
-  const handleAddModule = () => {
-    setModules([...modules, { id: Date.now(), title: '', parts: [] }]);
+  const [course, setCourse] = useState<Partial<Course>>({
+    title: "",
+    description: "",
+    modules: [],
+    category: '',
+    difficulty: 1,
+    price: 0,
+
+  });
+  const addModule = () => {
+    setCourse((c) => ({
+      ...c,
+      modules: [...c!.modules, { title: "", content: "", parts: [] }],
+    }));
   };
 
-  const handleRemoveModule = (id: number) => {
-    setModules(modules.filter((module) => module.id !== id));
+  const addPart = (moduleIndex: number) => {
+    const newModules = [...course.modules];
+    newModules[moduleIndex].parts.push({
+      fakeId: uuidv4(),
+      title: "",
+      content: "",
+      media: [],
+      order: newModules[moduleIndex].parts.length,
+      questions: undefined,
+      contents: [],
+    });
+    setCourse({ ...course, modules: newModules });
   };
 
-  const handleModuleChange = (id: number, title: string) => {
-    setModules(
-      modules.map((module) =>
-        module.id === id ? { ...module, title } : module
-      )
-    );
+  const addQuestion = (mIndex: number, pIndex: number) => {
+    const newModules = [...course.modules];
+    if (newModules[mIndex].parts[pIndex].questions) {
+      (newModules[mIndex].parts[pIndex].questions).push({
+        title: "",
+        options: [],
+        media: [],
+        score: 1,
+      })
+    } else {
+      newModules[mIndex].parts[pIndex].questions = [{
+        title: "",
+        options: [],
+        media: [],
+        score: 1,
+      }];
+    }
+    setCourse({ ...course, modules: newModules });
   };
 
-  const handleAddModulePart = (moduleId: number) => {
-    setModules(
-      modules.map((module) =>
-        module.id === moduleId
-          ? {
-              ...module,
-              parts: [...module.parts, { id: Date.now(), title: '', content: '', media: [] }],
-            }
-          : module
-      )
-    );
+
+  const addOption = (m: number, p: number, q: number) => {
+    const newModules = [...course.modules];
+    (newModules[m].parts[p].questions as Question[])[q].options.push({ content: "", isCorrect: false });
+    setCourse({ ...course, modules: newModules });
   };
 
-  const handleRemoveModulePart = (moduleId: number, partId: number) => {
-    setModules(
-      modules.map((module) =>
-        module.id === moduleId
-          ? { ...module, parts: module.parts.filter((part) => part.id !== partId) }
-          : module
-      )
-    );
-  };
 
-  const handleModulePartChange = (
-    moduleId: number,
-    partId: number,
-    field: string,
-    value: string | File[]
-  ) => {
-    setModules(
-      modules.map((module) =>
-        module.id === moduleId
-          ? {
-              ...module,
-              parts: module.parts.map((part) =>
-                part.id === partId ? { ...part, [field]: value } : part
-              ),
-            }
-          : module
-      )
-    );
-  };
 
+  const movePart = (direction: 1 | -1, index: number, moduleIndex: number) => {
+    const newIndex = index + direction;
+    if (newIndex < 0 || course.modules![moduleIndex].parts.length <= newIndex) return;
+    const newModules = [...course.modules];
+    const temp = newModules[moduleIndex].parts[newIndex];
+    newModules[moduleIndex].parts[newIndex] = newModules[moduleIndex].parts[index];
+    newModules[moduleIndex].parts[index] = temp;
+    setCourse({ ...course, modules: newModules });
+  }
+
+  const removePart = (moduleIndex: number, index: number,) => {
+    const newModuleParts = [
+      ...course.modules![moduleIndex].parts.slice(0, index),
+      ...course.modules![moduleIndex].parts.slice(index + 1,)];
+    const newModules = [...course.modules];
+    newModules[moduleIndex].parts = newModuleParts;
+    setCourse({ ...course, modules: newModules });
+  }
+
+  const handleModulePartChange = (mIndex: number, pIndex: number, key: keyof ModulePart, value: any) => {
+    const newModules = [...course.modules];
+    newModules[mIndex].parts[pIndex][key] = value;
+    setCourse({ ...course, modules: newModules });
+  }
+
+  const updateCourse = <T extends keyof Course>(key: T, value: Course[T]) => {
+    setCourse(state => ({ ...state, [key]: value }));
+  }
+
+  const handleRemoveModule = (mIndex: number) => {
+    const newModules = [...course.modules];
+    newModules.filter((_, index) => index != mIndex);
+    setCourse({ ...course, modules: newModules });
+  }
+
+  const handleModuleChange = (mIndex: number, key: keyof Module, value: any) => {
+    const newModules = [...course.modules];
+    newModules[mIndex][key] = value;
+    setCourse({ ...course, modules: newModules });
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission
-    console.log({
-      title,
-      description,
-      category,
-      difficulty,
-      price,
-      thumbnail,
-      modules,
-    });
   };
+
+  // const addOption = () => { }
 
   return (
     <div className="container mx-auto p-4">
@@ -94,34 +123,33 @@ export default function CreateCourse() {
           <input
             type="text"
             className="w-full p-2 border rounded"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={course.title}
+            onChange={(e) => {
+              updateCourse('title', e.target.value);
+            }}
           />
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Description</label>
-          <textarea
-            className="w-full p-2 border rounded"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Category</label>
-          <input
-            type="text"
-            className="w-full p-2 border rounded"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+          <ReactQuill
+            value={course.description as string}
+            onChange={(value) => {
+              updateCourse('description', value);
+            }}
           />
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Difficulty</label>
           <input
+            min={1}
+            max={10}
+            defaultValue={1}
             type="number"
             className="w-full p-2 border rounded"
-            value={difficulty}
-            onChange={(e) => setDifficulty(Number(e.target.value))}
+            value={course.difficulty}
+            onChange={(e) => {
+              updateCourse('difficulty', Number(e.target.value))
+            }}
           />
         </div>
         <div className="mb-4">
@@ -129,18 +157,20 @@ export default function CreateCourse() {
           <input
             type="number"
             className="w-full p-2 border rounded"
-            value={price}
-            onChange={(e) => setPrice(Number(e.target.value))}
+            value={course.price}
+            onChange={(e) => {
+              updateCourse('price', Number(e.target.value))
+            }}
           />
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Thumbnail</label>
-          <FileSelector onFileSelect={(file) => setThumbnail(file)} />
+          <FileSelector selectedFiles={[]} onSelectionChange={() => { }} />
         </div>
 
         <div className="my-8">
           <h2 className="text-xl font-bold mb-4">Modules</h2>
-          {modules.map((module) => (
+          {course.modules!.map((module, mIndex) => (
             <div key={module.id} className="mb-4 p-4 border rounded">
               <div className="flex justify-between items-center mb-2">
                 <input
@@ -148,72 +178,50 @@ export default function CreateCourse() {
                   placeholder="Module Title"
                   className="w-full p-2 border rounded"
                   value={module.title}
-                  onChange={(e) => handleModuleChange(module.id, e.target.value)}
+                  onChange={(e) => handleModuleChange(mIndex, 'title', e.target.value)}
                 />
                 <button
                   type="button"
                   className="bg-red-500 text-white p-2 rounded ml-2"
-                  onClick={() => handleRemoveModule(module.id)}
+                  onClick={() => handleRemoveModule(mIndex)}
                 >
                   Remove Module
                 </button>
               </div>
+              <h3 className="text-xl font-bold mb-4">Lessons</h3>
+              {module.parts.map((part, index) => (<ModulePartComponent
+                key={part.fakeId}
+                pIndex={index}
+                addOption={addOption}
+                addQuestion={addQuestion}
+                handleModulePartChange={handleModulePartChange}
+                handleRemoveModulePart={removePart}
+                part={part}
+                mIndex={mIndex}
+                setCourse={setCourse}
+              />
 
-              {module.parts.map((part) => (
-                <div key={part.id} className="ml-4 my-2 p-2 border rounded">
-                  <div className="flex justify-between items-center mb-2">
-                    <input
-                      type="text"
-                      placeholder="Part Title"
-                      className="w-full p-2 border rounded"
-                      value={part.title}
-                      onChange={(e) =>
-                        handleModulePartChange(module.id, part.id, 'title', e.target.value)
-                      }
-                    />
-                    <button
-                      type="button"
-                      className="bg-red-500 text-white p-2 rounded ml-2"
-                      onClick={() => handleRemoveModulePart(module.id, part.id)}
-                    >
-                      Remove Part
-                    </button>
-                  </div>
-                  <textarea
-                    placeholder="Part Content"
-                    className="w-full p-2 border rounded mb-2"
-                    value={part.content}
-                    onChange={(e) =>
-                      handleModulePartChange(module.id, part.id, 'content', e.target.value)
-                    }
-                  />
-                  <FileSelector
-                    onFileSelect={(files) =>
-                      handleModulePartChange(module.id, part.id, 'media', files)
-                    }
-                  />
-                </div>
               ))}
               <button
                 type="button"
                 className="bg-green-500 text-white p-2 rounded mt-2"
-                onClick={() => handleAddModulePart(module.id)}
+                onClick={() => addPart(mIndex)}
               >
-                Add Module Part
+                Add Lesson
               </button>
             </div>
           ))}
           <button
             type="button"
             className="bg-blue-500 text-white p-2 rounded"
-            onClick={handleAddModule}
+            onClick={addModule}
           >
             Add Module
           </button>
         </div>
 
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Create Course
+        <button type="submit" className="bg-indigo-600 text-white p-2 rounded">
+          submit
         </button>
       </form>
     </div>

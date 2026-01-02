@@ -3,22 +3,18 @@ import { getUserContext } from '../UserContext';
 import { formatSize as formatFileSize } from '../pages/storage/services';
 import { File } from '../types';
 
-// export interface File {
-//   id: number;
-//   name: string;
-//   mime: string;
-//   size: number;
-//   url: string;
-// }
-
 interface FileSelectorProps {
   selectedFiles: File[];
   onSelectionChange: (selectedFiles: File[]) => void;
+  isSingle?: boolean;
+  title?: string;
 }
 
 const FileSelector: React.FC<FileSelectorProps> = ({
   selectedFiles,
   onSelectionChange,
+  isSingle,
+  title,
 }) => {
   const [localSelectedFiles, setLocalSelectedFiles] =
     useState<File[]>(selectedFiles);
@@ -36,9 +32,17 @@ const FileSelector: React.FC<FileSelectorProps> = ({
   }, [files, selectedFiles]);
 
   const selectFile = (file: File) => {
-    const updated = [...localSelectedFiles, file];
-    setLocalSelectedFiles(updated);
-    setAvailableFiles((prev) => prev.filter((f) => f.id !== file.id));
+    let updated;
+    if (isSingle) {
+      updated = [file];
+      setLocalSelectedFiles(updated);
+
+    } else {
+      updated = [...localSelectedFiles, file];
+      setLocalSelectedFiles(updated);
+    }
+    setAvailableFiles((prev) => prev
+      .filter((f) => f.id !== file.id));
     onSelectionChange(updated);
   };
 
@@ -51,12 +55,10 @@ const FileSelector: React.FC<FileSelectorProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800">
-          
+          {title}
         </h3>
-
         <button
           onClick={() => setIsModalOpen(true)}
           className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 transition"
@@ -65,7 +67,6 @@ const FileSelector: React.FC<FileSelectorProps> = ({
         </button>
       </div>
 
-      {/* Selected files */}
       <div className="rounded-xl border border-gray-200 bg-white p-4 min-h-[120px]">
         {localSelectedFiles.length === 0 ? (
           <p className="text-sm text-gray-400 text-center">
@@ -99,24 +100,24 @@ const FileSelector: React.FC<FileSelectorProps> = ({
         )}
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
-            {/* Modal header */}
+        <div className="fixed inset-0 !m-0 z-50 flex items-center justify-center h-full ">
+          <div
+            onClick={() => setIsModalOpen(false)}
+            className='w-full h-full absolute bg-black/40 '></div>
+          <div className="w-full max-w-lg rounded-xl bg-white shadow-xl z-50 self-center">
             <div className="flex items-center justify-between border-b px-4 py-3">
               <h4 className="font-semibold text-gray-800">
                 Available Files
               </h4>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 hover:bg-gray-400 px-1 rounded-full"
               >
                 ✕
               </button>
             </div>
 
-            {/* Modal body */}
             <div className="max-h-[350px] overflow-y-auto p-4 space-y-2">
               {availableFiles.length === 0 ? (
                 <p className="text-sm text-gray-400 text-center">
@@ -139,8 +140,6 @@ const FileSelector: React.FC<FileSelectorProps> = ({
                 ))
               )}
             </div>
-
-            {/* Modal footer */}
             <div className="border-t px-4 py-3 text-right">
               <button
                 onClick={() => setIsModalOpen(false)}

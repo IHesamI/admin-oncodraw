@@ -11,6 +11,7 @@ import AlertContextProvider from './Context/AlertContext';
 import CreateCase from './pages/case/Create';
 import EditCase from './pages/case/CaseEdit';
 import CreateCourse from './pages/course/CreateCourse';
+import Courses from './pages/course/Courses';
 
 
 function App() {
@@ -33,6 +34,12 @@ function App() {
               path="/cases"
               element={
                 <Cases />
+              }
+            />
+              <Route
+              path="/courses"
+              element={
+                <Courses />
               }
             />
             <Route
