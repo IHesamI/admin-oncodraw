@@ -60,7 +60,10 @@ const FileSelector: React.FC<FileSelectorProps> = ({
           {title}
         </h3>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={(e) => {
+            e.preventDefault();
+            setIsModalOpen(true)
+          }}
           className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 transition"
         >
           + Add files

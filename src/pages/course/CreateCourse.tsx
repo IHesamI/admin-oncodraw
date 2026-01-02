@@ -4,8 +4,10 @@ import { Course, Module, ModulePart, Question } from '../../types';
 import ModulePartComponent from '../../components/ModulePart';
 import { uuidv4 } from '../../utils/commonServices';
 import ReactQuill from 'react-quill';
+import BackEndApisServiceInstance from '../../Api/ServerApis';
 
 export default function CreateCourse() {
+
 
   const [course, setCourse] = useState<Partial<Course>>({
     title: "",
@@ -109,7 +111,7 @@ export default function CreateCourse() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
+    BackEndApisServiceInstance.createCourse(course);
   };
 
   // const addOption = () => { }

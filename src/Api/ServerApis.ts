@@ -431,6 +431,9 @@ class BackEndApisService {
   async editCase(caseData: Partial<Case>): Promise<Case> {
     return this.handleAuthorizePostAPI(`/instructor-dashboard/edit-case/${caseData.documentId}`, JSON.stringify({ ...caseData }));
   }
+  async createCourse(course: Course) {
+    return this.handleAuthorizePostAPI('/instructor-dashboard/create-course', JSON.stringify({ course }));
+  }
 }
 
 const BackEndApisServiceInstance = BackEndApisService.REGISTRATION.create();

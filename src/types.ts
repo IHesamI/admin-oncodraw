@@ -124,6 +124,7 @@ export interface Module {
   documentId: string;
   title: string;
   parts: ModulePart[];
+  category: string;
 }
 
 export interface Rate {

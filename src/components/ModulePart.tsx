@@ -60,6 +60,7 @@ export default function ModulePartComponent({
                         course.modules![mIndex].parts[pIndex].contents = [...course.modules![mIndex].parts[pIndex].contents, {
                             content: '',
                             media: null,
+                            __component:"media-with-text.media-text",
                         }]
                         return { ...course };
 
