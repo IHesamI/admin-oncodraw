@@ -1,5 +1,5 @@
 export const formatSize = (bytes: number | string) => {
-  const size = typeof bytes === 'string' ? parseInt(bytes) * 1000 : bytes * 1000;
+  const size = typeof bytes === 'string' ? parseInt(bytes)  : bytes ;
   if (!size) return '—';
   const units = ['B', 'KB', 'MB', 'GB'];
   let i = 0;

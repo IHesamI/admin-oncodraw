@@ -178,7 +178,8 @@ class BackEndApisService {
         withoutNotif: true,
       }
     ).then(res => {
-      res.storage.files = res.storage.files ? res.storage.files : [];
+      res.storage.files = res.storage.files ? res.storage.files.map(item => ({ ...item, size: item.size * 1000 })) : [];
+
       return res;
     });
   }

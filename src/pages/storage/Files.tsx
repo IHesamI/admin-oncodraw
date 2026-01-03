@@ -5,11 +5,13 @@ import { File } from '../../types';
 import BackEndApisServiceInstance from '../../Api/ServerApis';
 import ChunkUploader from '../../components/ChunkUploader';
 import { getUserContext } from '../../UserContext';
+import { formatSize } from './services';
+import StorageVisualizer from '../../components/StorageVisualizer';
 // import { Trash2 } from 'lucide-react';
 
 
 export function Files() {
-  const { storage: { files }, updateStore } = getUserContext();
+  const { storage: { files, totalStorage }, updateStore } = getUserContext();
 
   // const [files, setFiles] = useState<File[]>([]);
 
@@ -57,9 +59,15 @@ export function Files() {
     <div className='h-full flex flex-col'>
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-gray-800">Files</h2>
-        <label className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
-          <ChunkUploader handleUploadedFile={handleUploadedFile} />
-        </label>
+        <ChunkUploader
+          handleUploadedFile={handleUploadedFile}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+        />
+      </div>
+      <div>
+        <StorageVisualizer
+          totalStorage={totalStorage}
+          files={files} />
       </div>
 
       <div className="flex mb-3 items-center gap-4">
@@ -79,7 +87,7 @@ export function Files() {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex-1 p-4 ">
-        <div className="overflow-x-auto h-full text-center flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {!files || !files.length ? (
             <span aria-colspan={5} className="px-6 py-8 text-center text-gray-500 w-full">
               No files uploaded yet. Upload your first file!

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, Upload, Users, PersonStanding, Users2, User } from 'lucide-react';
+import { LayoutDashboard, FileText, Upload, Users, PersonStanding, Users2, User, CircleEllipsis } from 'lucide-react';
 import { getUserContext } from '../UserContext';
 
 interface AdminLayoutProps {
@@ -15,7 +15,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { id: 'cases', label: 'Cases', icon: FileText, path: '/cases' },
     { id: 'courses', label: 'Courses', icon: FileText, path: '/courses' },
     { id: 'files', label: 'Files', icon: Upload, path: '/files' },
-    { id: 'subscriptions', label: 'Subscriptions', icon: Users, path: '/subscriptions' },
+    { id: 'subscriptions', label: 'Subscriptions', icon: CircleEllipsis, path: '/subscriptions' },
   ];
 
   return (
@@ -23,7 +23,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <aside className="w-64 bg-[#000325] border-r flex flex-col justify-between pb-2 border-gray-200 fixed h-full">
         <div>
           <div className="p-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-main">OncoRealm Panel</h1>
+            <h1 className="text-2xl font-bold text-main flex text-center items-center justify-center">
+              <User className="w-5 h-5 text-white" />
+              &nbsp;
+              <span className="font-medium text-white"> 
+                {/* <br /> */}
+                &nbsp;
+                {user?.username}</span>
+
+            </h1>
           </div>
           <nav className="p-4">
             {navItems.map((item) => {
@@ -46,8 +54,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </nav>
         </div>
         <span className='flex flex-row gap-[10px] text-center w-full'>
-          <User className="w-5 h-5 text-white" />
-          <span className="font-medium text-white">{user?.username}</span>
         </span>
       </aside>
       <main className="ml-64 flex-1 p-8">{children}</main>

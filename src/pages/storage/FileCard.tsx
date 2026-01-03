@@ -44,15 +44,8 @@ const FileCard: React.FC<FileCardProps> = ({
     size, } = file;
   return (
     <div
-
       onClick={() => onSelect(file)}
-      className={` h-max
-    max-w-[300px]
-      group flex items-center gap-4
-      rounded-xl border bg-white p-4
-      shadow-sm transition-all
-       hover:shadow-lg
-cursor-pointer
+      className={`h-max max-w-[300px] group flex items-center gap-4 rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-lg cursor-pointer
       ${isSelected ? 'border-blue-500 ring-2 ring-blue-500' : 'border-gray-200'}
     `}
     >
@@ -69,9 +62,8 @@ cursor-pointer
       />
       <div
         className="
-        flex h-16 w-12 items-center justify-center
+        flex h-12 w-12 items-center justify-center
         rounded-lg bg-blue-50 text-blue-600
-        group-hover:bg-blue-100
       ">
         {getFileIcon(mime)}
       </div>
@@ -84,7 +76,9 @@ cursor-pointer
         <div className="mt-1 flex gap-3 text-xs text-gray-500">
           <span>{formatMime(mime)}</span>
           <span>•</span>
-          <span>{formatSize(size)}</span>
+          <span className='text-gray-700'>
+            {formatSize(size)}
+            </span>
         </div>
       </div>
     </div>

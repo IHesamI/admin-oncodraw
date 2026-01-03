@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import FileSelector from '../components/FileSelector';
 import { Course, Module, ModulePart, Question } from '../types';
-// import ModulePartComponent from '../../components/ModulePart';
 import { uuidv4 } from '../utils/commonServices';
 import ReactQuill from 'react-quill';
-import BackEndApisServiceInstance from '../Api/ServerApis';
+// import BackEndApisServiceInstance from '../Api/ServerApis';
 import ModulePartComponent from './ModulePart';
 export default function CourseForm({ initialCourse, handleSubmit }: {
   initialCourse?: Partial<Course>,
@@ -181,11 +180,17 @@ export default function CourseForm({ initialCourse, handleSubmit }: {
         <button
           onClick={() => {
             setCourse(state => {
-              state.instructors = [...state.instructors, { email: '', id: uuidv4() }];
+              state.instructors = [
+                ...state.instructors,
+                {
+                  email: '',
+                  id: uuidv4()
+                }
+              ];
               return { ...state }
             })
           }}
-           className="w-fit inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+          className="w-fit inline-flex justify-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
           Add Instructor
         </button>
         <div className="mb-4">
@@ -224,7 +229,15 @@ export default function CourseForm({ initialCourse, handleSubmit }: {
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Thumbnail</label>
-          <FileSelector selectedFiles={[]} onSelectionChange={() => { }} />
+          <FileSelector
+            isSingle
+            selectedFiles={course.thumbnail ? [course.thumbnail] : []}
+            onSelectionChange={(files) => {
+              setCourse(state => {
+                state.thumbnail = files[files.length - 1]
+                return { ...state };
+              });
+            }} />
         </div>
 
         <div className="my-8">
@@ -249,7 +262,7 @@ export default function CourseForm({ initialCourse, handleSubmit }: {
               </div>
               <h3 className="text-xl font-bold mb-4">Lessons</h3>
               {module.parts.map((part, index) => (<ModulePartComponent
-                key={part.fakeId}
+                key={part.fakeId || part.id}
                 pIndex={index}
                 addOption={addOption}
                 addQuestion={addQuestion}
@@ -258,6 +271,7 @@ export default function CourseForm({ initialCourse, handleSubmit }: {
                 part={part}
                 mIndex={mIndex}
                 setCourse={setCourse}
+                movePart={movePart}
               />
 
               ))}

@@ -3,6 +3,7 @@ import React, { Dispatch, SetStateAction } from 'react'
 import { Course, ModulePart } from '../types'
 import ReactQuill from 'react-quill';
 import FileSelector from './FileSelector';
+import { ArrowDown, ArrowUp, Trash } from 'lucide-react';
 
 export default function ModulePartComponent({
     part,
@@ -13,11 +14,13 @@ export default function ModulePartComponent({
     addQuestion,
     addOption,
     setCourse,
+    movePart
 }: {
     addQuestion: (mIndex: number, pIndex: number) => void;
     part: ModulePart;
     pIndex: number;
     mIndex: number;
+    movePart: (direction: 1 | -1, pIndex: number, mIndex: number,) => void;
     handleModulePartChange: (mIndex: number, pIndex: number, key: keyof ModulePart, value: any) => void;
     handleRemoveModulePart: (mIndex: number, pIndex: number) => void;
     addOption: (m: number, p: number, q: number) => void;
@@ -40,7 +43,22 @@ export default function ModulePartComponent({
                     className="bg-red-500 text-white h-fit p-2 rounded ml-2"
                     onClick={() => handleRemoveModulePart(mIndex, pIndex)}
                 >
-                    Remove Lesson
+                    <Trash />
+                </button>
+                <button
+                    type="button"
+                    className="bg-indigo-500 text-white h-fit p-2 rounded ml-2"
+                    onClick={() => movePart(-1,pIndex,mIndex)}
+                >
+                    <ArrowUp />
+                </button>
+
+                <button
+                    type="button"
+                    className="bg-indigo-500 text-white h-fit p-2 rounded ml-2"
+                    onClick={() => movePart(1,pIndex,mIndex)}
+                >
+                    <ArrowDown />
                 </button>
             </div>
             <ReactQuill
@@ -60,7 +78,7 @@ export default function ModulePartComponent({
                         course.modules![mIndex].parts[pIndex].contents = [...course.modules![mIndex].parts[pIndex].contents, {
                             content: '',
                             media: null,
-                            __component:"media-with-text.media-text",
+                            __component: "media-with-text.media-text",
                         }]
                         return { ...course };
 
@@ -72,7 +90,7 @@ export default function ModulePartComponent({
 
             <div>
                 {part.contents?.map((item, index) => {
-                    return <div key={`${item.id}-${index}`}className="ml-4 my-2 p-2 border rounded">
+                    return <div key={`${item.id}-${index}`} className="ml-4 my-2 p-2 border rounded">
                         <ReactQuill
                             defaultValue={
                                 item.content
@@ -97,6 +115,21 @@ export default function ModulePartComponent({
 
                             }}
                         />
+                        <button
+                            type="button"
+                            className="bg-red-500 text-white p-2 rounded mt-2  h-fit"
+                            onClick={() => {
+                                setCourse(course => {
+                                    course.modules![mIndex].parts[pIndex].contents
+                                        = course.modules![mIndex].parts[pIndex]
+                                            .contents!.filter((_, theIndex) => theIndex != index);
+                                    return { ...course };
+
+                                })
+                            }}
+                        >
+                            Remove Content
+                        </button>
                     </div>
                 })}
             </div>
@@ -109,88 +142,91 @@ export default function ModulePartComponent({
                 Add Question
             </button>
             {part.questions ? <>
-                {part.questions.map((question, qIndex) => 
-                <div key={`${question.id}-${qIndex}`} className="ml-4 my-2 p-2 border rounded">
-                    <div className='flex flex-row mb-1'>
-                        <input
-                            type="text"
-                            placeholder="Question Title"
-                            className="w-full p-2 border rounded"
-                            value={question.title}
-                            onChange={(e) => {
-                                handleModulePartChange(mIndex, pIndex, 'title', e.target.value)
-                            }}
-                        />
-                        <button
-                            type="button"
-                            className="bg-red-500 text-white h-fit rounded ml-2"
-                            onClick={() => {
-                                setCourse(course => {
-                                    course.modules![mIndex].parts[pIndex].questions
-                                        = course.modules![mIndex].parts[pIndex]
-                                            .questions.filter((_, index) => qIndex != index);
-                                    return { ...course };
-
-                                })
-                            }}
-                        >
-                            Remove Question
-                        </button>
-                    </div>
-                    <button
-                        type="button"
-                        className="bg-green-500 text-white p-2 rounded ml-2"
-                        onClick={() => addOption(mIndex, pIndex, qIndex)}
-                    >
-                        Add Option
-                    </button>
-                    {question.options.map((option, oIndex) =>
-                        <div key={part.id} className="flex flex-row ml-4 my-2 p-2 border rounded items-center">
-                            <ReactQuill
-                                // type="text"
-                                defaultValue={
-                                    option.content
-                                }
-                                onChange={(value) => {
-                                    setCourse((course) => {
-                                        // const newModules = [...course.modules];
-                                        course.modules![mIndex].parts[pIndex]
-                                            .questions[qIndex]
-                                            .options[oIndex].content = value;
-                                        return { ...course };
-                                    })
-                                }}
-                            />
-                            <label>&nbsp;Is Correct? &nbsp;</label>
+                {part.questions.map((question, qIndex) =>
+                    <div key={`${question.id}-${qIndex}`} className="ml-4 my-2 p-2 border rounded">
+                        <div className='flex flex-row mb-1'>
                             <input
-                                type='checkbox'
-                                checked={option.isCorrect}
+                                type="text"
+                                placeholder="Question Title"
+                                className="w-full p-2 border rounded"
+                                value={question.title}
                                 onChange={(e) => {
-                                    setCourse((course) => {
-                                        course.modules![mIndex].parts[pIndex]
-                                            .questions[qIndex]
-                                            .options[oIndex].isCorrect = e.target.checked;
+                                    setCourse(course => {
+                                        course.modules![mIndex].parts[pIndex].questions[qIndex].title
+                                            = e.target.value;
                                         return { ...course };
                                     })
                                 }}
                             />
                             <button
                                 type="button"
-                                className="bg-red-500 text-white p-2 rounded ml-2 h-fit"
+                                className="bg-red-500 text-white h-fit rounded ml-2"
                                 onClick={() => {
                                     setCourse(course => {
-                                        course.modules![mIndex].parts[pIndex].questions[qIndex].options
-                                            = course.modules![mIndex].parts[pIndex].questions[qIndex]
-                                                .options.filter((_, index) => oIndex != index);
+                                        course.modules![mIndex].parts[pIndex].questions
+                                            = course.modules![mIndex].parts[pIndex]
+                                                .questions.filter((_, index) => qIndex != index);
                                         return { ...course };
-
                                     })
                                 }}
                             >
-                                Remove Option
+                                Remove Question
                             </button>
-                        </div>)}
-                </div>)}
+                        </div>
+                        <button
+                            type="button"
+                            className="bg-green-500 text-white p-2 rounded ml-2"
+                            onClick={() => addOption(mIndex, pIndex, qIndex)}
+                        >
+                            Add Option
+                        </button>
+                        {question.options.map((option, oIndex) =>
+                            <div key={part.id} className="flex flex-row ml-4 my-2 p-2 border rounded items-center">
+                                <ReactQuill
+                                    // type="text"
+                                    defaultValue={
+                                        option.content
+                                    }
+                                    onChange={(value) => {
+                                        setCourse((course) => {
+                                            // const newModules = [...course.modules];
+                                            course.modules![mIndex].parts[pIndex]
+                                                .questions[qIndex]
+                                                .options[oIndex].content = value;
+                                            return { ...course };
+                                        })
+                                    }}
+                                />
+                                <label>&nbsp;Is Correct? &nbsp;</label>
+                                <input
+                                    type='checkbox'
+                                    checked={option.isCorrect}
+                                    onChange={(e) => {
+                                        setCourse((course) => {
+                                            course.modules![mIndex].parts[pIndex]
+                                                .questions[qIndex]
+                                                .options[oIndex].isCorrect = e.target.checked;
+                                            return { ...course };
+                                        })
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    className="bg-red-500 text-white p-2 rounded ml-2 h-fit"
+                                    onClick={() => {
+                                        setCourse(course => {
+                                            course.modules![mIndex].parts[pIndex].questions[qIndex].options
+                                                = course.modules![mIndex].parts[pIndex].questions[qIndex]
+                                                    .options.filter((_, index) => oIndex != index);
+                                            return { ...course };
+
+                                        })
+                                    }}
+                                >
+                                    Remove Option
+                                </button>
+                            </div>)}
+                    </div>)}
             </> : <>
             </>}
         </div>

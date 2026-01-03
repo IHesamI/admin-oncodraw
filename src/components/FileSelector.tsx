@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getUserContext } from '../UserContext';
 import { formatSize as formatFileSize } from '../pages/storage/services';
 import { File } from '../types';
+import ChunkUploader from './ChunkUploader';
 
 interface FileSelectorProps {
   selectedFiles: File[];
@@ -16,6 +17,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
   isSingle,
   title,
 }) => {
+  const { updateStore } = getUserContext();
   const [localSelectedFiles, setLocalSelectedFiles] =
     useState<File[]>(selectedFiles);
   const [availableFiles, setAvailableFiles] = useState<File[]>([]);
@@ -36,6 +38,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     if (isSingle) {
       updated = [file];
       setLocalSelectedFiles(updated);
+      setIsModalOpen(false);
 
     } else {
       updated = [...localSelectedFiles, file];
@@ -143,7 +146,20 @@ const FileSelector: React.FC<FileSelectorProps> = ({
                 ))
               )}
             </div>
-            <div className="border-t px-4 py-3 text-right">
+            <div className="border-t px-4 py-3 text-right flex flex-row justify-between">
+              <label className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+                <ChunkUploader
+                  handleUploadedFile={(file) => {
+                    updateStore((state) => {
+                      return {
+                        ...state, storage: {
+                          ...state.storage,
+                          files: [...state.storage.files, ...file]
+                        }
+                      }
+                    })
+                  }} />
+              </label>
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="rounded-md bg-gray-100 px-4 py-2 text-sm hover:bg-gray-200"

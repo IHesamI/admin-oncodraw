@@ -2,13 +2,18 @@ import { useRef, useState } from "react";
 import BackEndApisServiceInstance from "../Api/ServerApis";
 import { Upload } from "lucide-react";
 import { File } from "../types";
+import { useAlert } from "../Context/AlertContext";
 
 
 const CHUNK_SIZE = 1 * 1024 * 1024
 
 export default function ChunkUploader({
-    handleUploadedFile
+    handleUploadedFile,
+    style = {},
+    className = '',
 }: {
+    style?: React.CSSProperties;
+    className?: string;
     handleUploadedFile: (file: File[]) => void;
 }) {
     const [uploading, setUploading] = useState(false);
@@ -16,6 +21,7 @@ export default function ChunkUploader({
     const [status, setStatus] = useState("idle");
     const [currentChunk, setCurrentChunk] = useState(0);
     const [totalChunks, setTotalChunks] = useState(0);
+    const { showAlert } = useAlert();
     // const { del, get, post } = useFetchClient();
     const inputRef = useRef<HTMLInputElement>(null)
     const cachedFile = useRef<{
@@ -49,6 +55,12 @@ export default function ChunkUploader({
                 setProgress(percent);
             } catch (err) {
                 setStatus("error");
+                showAlert({
+                    message: err.message,
+                    type: 'danger',
+                    title: "Upload Failed!",
+                    cancelText: 'Close'
+                })
                 return;
             }
         }
@@ -77,6 +89,12 @@ export default function ChunkUploader({
                 setCurrentChunk(i + 1);
                 setProgress(percent);
             } catch (err) {
+                showAlert({
+                    message: err.message,
+                    type: 'danger',
+                    title: "Upload Failed!",
+                    cancelText: 'Close'
+                })
                 setStatus("error");
                 return;
             }
@@ -89,18 +107,19 @@ export default function ChunkUploader({
             <div
             // style={styles.container}
             >
-                <span
-                    // onClick={() => inputRef.current?.click()}
+                {status === "idle" && <span
+                    onClick={() => inputRef.current?.click()}
                     style={{
-                        color: 'white'
+                        color: 'white',
+                        ...style
                     }}
-                    className="flex flex-row items-center justify-between"
+                    className={`flex flex-row items-center justify-between` + className}
                 >
                     Select a file to Upload
                     &nbsp;
 
                     <Upload className="w-5 h-5" />
-                </span>
+                </span>}
                 {/* <br /> */}
                 <input
                     ref={inputRef}
@@ -122,23 +141,36 @@ export default function ChunkUploader({
                                 />
                             </div>
 
-                            <p>
-                                {status === "uploading" && (
-                                    <>
-                                        Uploading chunk {currentChunk} / {totalChunks} — {progress}%
-                                    </>
-                                )}
-                                {status === "done" && "Upload complete ✅"}
-                                {status === "error" && <>
-                                    Upload failed ❌
-                                    <br />
-                                    <button
-                                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                        onClick={retry}>
-                                        Re-try
-                                    </button>
-                                </>}
-                            </p>
+                            <div className="flex flex-row">
+                                <p>
+                                    {status === "uploading" && (
+                                        <>
+                                            Uploading chunk {currentChunk} / {totalChunks} — {progress}%
+                                        </>
+                                    )}
+                                    {status === "done" && "Upload complete ✅"}
+                                    {status === "error" && <>
+                                        Upload failed ❌
+                                        <br />
+                                        <button
+                                            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                retry()
+                                            }}>
+                                            Re-try
+                                        </button>
+                                    </>}
+                                </p>
+                                <button
+                                    className="flex items-center gap-2 bg-blue-600 h-fit self-end text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                                    onClick={(e) => {
+                                        setStatus('idle')
+                                    }}>
+                                    Done
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
