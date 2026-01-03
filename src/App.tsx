@@ -12,6 +12,7 @@ import CreateCase from './pages/case/Create';
 import EditCase from './pages/case/CaseEdit';
 import CreateCourse from './pages/course/CreateCourse';
 import Courses from './pages/course/Courses';
+import EditCourse from './pages/course/EditCourse';
 
 
 function App() {
@@ -36,7 +37,7 @@ function App() {
                 <Cases />
               }
             />
-              <Route
+            <Route
               path="/courses"
               element={
                 <Courses />
@@ -58,6 +59,12 @@ function App() {
               path="/course/create"
               element={
                 <CreateCourse />
+              }
+            />
+            <Route
+              path="/course/edit/:documentId"
+              element={
+                <EditCourse />
               }
             />
             <Route

@@ -36,7 +36,37 @@ export function Courses() {
                                         No Courses yet. Create your first Course!
                                     </td>
                                 </tr>
-                            ) : <></>
+                            ) : <>
+
+                                {courses.map(course =>
+                                    <div className='flex flex-row justify-between p-4 my-1'>
+                                        <h1>{course.title}</h1>
+                                        <div className='flex flex-col gap-1'>
+                                            <button
+                                                onClick={() => {
+                                                    navigate(`/course/edit/${course.documentId}`)
+                                                    // setCourse(state => {
+                                                    //     state.instructors = state.instructors!.slice(0, index).concat(state.instructors!.slice(index + 1));
+                                                    //     return { ...state };
+                                                    // })
+                                                }}
+                                                className="inline-flex  justify-center rounded-md border border-transparent bg-indigo-600 py-1 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    // setCourse(state => {
+                                                    //     state.instructors = state.instructors!.slice(0, index).concat(state.instructors!.slice(index + 1));
+                                                    //     return { ...state };
+                                                    // })
+                                                }}
+                                                className="inline-flex  justify-center rounded-md border border-transparent bg-orange-600 py-1 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                                Review
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
                                 //    cases.map(item => <CaseListItem key={item.id} caseItem={item} />)
                             }
                         </tbody>

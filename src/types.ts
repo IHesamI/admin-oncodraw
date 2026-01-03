@@ -36,11 +36,7 @@ export interface CoursePerformance {
   enrollmentTrends: { month: string; students: number }[];
 }
 
-export interface PendingTask {
-  id: number;
-  task: string;
-  course: string;
-}
+
 
 export interface CalendarEvent {
   id: number;
